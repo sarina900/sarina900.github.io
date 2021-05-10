@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Sarina Khajeharzani" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project2 Sarina</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project2/">Project2 Sarina</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="my-project-2" class="section level2">
+<h2>My project 2</h2>
+<p>##Introduction
+<em>For this project I am using the bechdel data from the fivethirtyeight. This data is about the Dollar-And-Cents Case Against Hollywood’s Exclusion of Women to see different information about the Hollywood movies that have a female actress who is the main character to see if woman are excluded from movies or not. Some of the most important factors of this data are the year, test (indicating the type of the test that they used), the budget of the movie, Binary which says that the movie passes the test or not.</em></p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.4     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
+library(ggplot2)
+library(mvtnorm)
+library(ggExtra)
+library(ggridges)
+library(rstatix)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rstatix&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>library(vegan)</code></pre>
+<pre><code>## Loading required package: permute</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## This is vegan 2.5-7</code></pre>
+<pre class="r"><code>library(fivethirtyeight)</code></pre>
+<pre><code>## Some larger datasets need to be installed separately, like senators and
+## house_district_forecast. To install these, we recommend you install the
+## fivethirtyeightdata package by running:
+## install.packages(&#39;fivethirtyeightdata&#39;, repos =
+## &#39;https://fivethirtyeightdata.github.io/drat/&#39;, type = &#39;source&#39;)</code></pre>
+<pre class="r"><code>write_csv(bechdel, &quot;bc.csv&quot;)
+getwd()</code></pre>
+<pre><code>## [1] &quot;/stor/home/sk49523/website1/content/project&quot;</code></pre>
+<pre class="r"><code>bc &lt;- read_csv(&quot;bc.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   year = col_double(),
+##   imdb = col_character(),
+##   title = col_character(),
+##   test = col_character(),
+##   clean_test = col_character(),
+##   binary = col_character(),
+##   budget = col_double(),
+##   domgross = col_double(),
+##   intgross = col_double(),
+##   code = col_character(),
+##   budget_2013 = col_double(),
+##   domgross_2013 = col_double(),
+##   intgross_2013 = col_double(),
+##   period_code = col_double(),
+##   decade_code = col_double()
+## )</code></pre>
+<pre class="r"><code>select&lt;-dplyr::select
+new&lt;- bc %&gt;% select(year, clean_test, budget, domgross, intgross, title)  %&gt;% group_by(clean_test)  %&gt;% arrange(desc(year))</code></pre>
+</div>
+<div id="manova-testing" class="section level2">
+<h2>MANOVA testing</h2>
+<pre class="r"><code>#assumption
+group&lt;- bc$clean_test
+DVs&lt;- bc %&gt;% select(year, budget, domgross, intgross)
+sapply(split(DVs, group),mshapiro_test)</code></pre>
+<pre><code>##           dubious      men          notalk       nowomen      ok          
+## statistic 0.7840468    0.3913006    0.7605829    0.7302806    0.6321768   
+## p.value   3.873018e-13 4.155368e-25 1.456159e-26 1.132174e-14 4.595859e-38</code></pre>
+<pre class="r"><code>#MANOVA
+man_1 &lt;- manova(cbind(year, budget, domgross, intgross )~ clean_test, data= bc)
+summary(man_1)</code></pre>
+<pre><code>##              Df   Pillai approx F num Df den Df    Pr(&gt;F)    
+## clean_test    4 0.039587   4.4281     16   7088 7.938e-09 ***
+## Residuals  1772                                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man_1)</code></pre>
+<pre><code>##  Response year :
+##               Df Sum Sq Mean Sq F value   Pr(&gt;F)   
+## clean_test     4   1227 306.685  3.8477 0.004058 **
+## Residuals   1772 141240  79.707                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response budget :
+##               Df     Sum Sq    Mean Sq F value    Pr(&gt;F)    
+## clean_test     4 7.8943e+16 1.9736e+16  8.6095 7.019e-07 ***
+## Residuals   1772 4.0620e+18 2.2923e+15                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response domgross :
+##               Df     Sum Sq    Mean Sq F value   Pr(&gt;F)   
+## clean_test     4 1.0295e+17 2.5736e+16  4.0116 0.003042 **
+## Residuals   1772 1.1368e+19 6.4154e+15                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response intgross :
+##               Df     Sum Sq    Mean Sq F value   Pr(&gt;F)   
+## clean_test     4 6.2282e+17 1.5571e+17  3.5328 0.007035 **
+## Residuals   1772 7.8100e+19 4.4074e+16                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## 17 observations deleted due to missingness</code></pre>
+<pre class="r"><code>bc %&gt;% group_by(clean_test) %&gt;% summarize(mean(year), mean(budget), mean(domgross),
+    mean(intgross))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 5 x 5
+##   clean_test `mean(year)` `mean(budget)` `mean(domgross)` `mean(intgross)`
+##   &lt;chr&gt;             &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1 dubious           2003.      49263380.               NA               NA
+## 2 men               2002.      45127098.               NA               NA
+## 3 notalk            2002.      53225573.               NA               NA
+## 4 nowomen           2001.      48606738.               NA               NA
+## 5 ok                2003.      37929168.               NA               NA</code></pre>
+<pre class="r"><code>#One-Way ANOVA 
+#the results tells us to reject the (null hypothesis) thefore all the means are not the same.
+
+summary(aov(year~clean_test,data=bc))</code></pre>
+<pre><code>##               Df Sum Sq Mean Sq F value  Pr(&gt;F)   
+## clean_test     4   1382   345.4   4.315 0.00178 **
+## Residuals   1789 143198    80.0                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(budget~clean_test,data=bc))</code></pre>
+<pre><code>##               Df    Sum Sq   Mean Sq F value   Pr(&gt;F)    
+## clean_test     4 7.929e+16 1.982e+16   8.683 6.11e-07 ***
+## Residuals   1789 4.084e+18 2.283e+15                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(domgross~clean_test,data=bc))</code></pre>
+<pre><code>##               Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
+## clean_test     4 1.029e+17 2.574e+16   4.012 0.00304 **
+## Residuals   1772 1.137e+19 6.415e+15                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 17 observations deleted due to missingness</code></pre>
+<pre class="r"><code>summary(aov(intgross~clean_test,data=bc))</code></pre>
+<pre><code>##               Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
+## clean_test     4 6.263e+17 1.566e+17    3.56 0.00671 **
+## Residuals   1778 7.821e+19 4.399e+16                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 11 observations deleted due to missingness</code></pre>
+<pre class="r"><code>#post hoc t-test
+pairwise.t.test(bc$year, bc$clean_test, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  bc$year and bc$clean_test 
+## 
+##         dubious men     notalk  nowomen
+## men     0.26349 -       -       -      
+## notalk  0.17405 0.94903 -       -      
+## nowomen 0.12347 0.58972 0.56796 -      
+## ok      0.47928 0.01891 0.00063 0.00675
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(bc$budget, bc$clean_test, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  bc$budget and bc$clean_test 
+## 
+##         dubious men    notalk  nowomen
+## men     0.4332  -      -       -      
+## notalk  0.3818  0.0444 -       -      
+## nowomen 0.9080  0.5106 0.3093  -      
+## ok      0.0092  0.0598 1.7e-08 0.0145 
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(bc$domgross, bc$clean_test, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  bc$domgross and bc$clean_test 
+## 
+##         dubious men     notalk  nowomen
+## men     0.42799 -       -       -      
+## notalk  0.65977 0.12496 -       -      
+## nowomen 0.30682 0.75755 0.08656 -      
+## ok      0.05383 0.27028 0.00012 0.55594
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(bc$intgross, bc$clean_test, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  bc$intgross and bc$clean_test 
+## 
+##         dubious men     notalk  nowomen
+## men     0.31993 -       -       -      
+## notalk  0.76206 0.09996 -       -      
+## nowomen 0.36353 0.98864 0.15089 -      
+## ok      0.05579 0.42060 0.00033 0.47143
+## 
+## P value adjustment method: none</code></pre>
+<p><em>for checking the assumption I did multivariate normality for each group and the p value was so small so we can reject the null hypothesis and therefore the assumption of normality was not met.</em></p>
+</div>
+<div id="randomization-test-mean-difference-correlation-f-statisticanova-chi-squared-etc" class="section level2">
+<h2>randomization test: (mean difference, correlation, F-statistic/ANOVA, chi-squared), etc</h2>
+<pre class="r"><code>#H0: The name of the test and whether they pass/ fail are related in the population.
+#HA :The name of the test and whether they pass/ fail are not related in the population.
+
+#Chi-Square test
+library(&quot;MASS&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked _by_ &#39;.GlobalEnv&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following object is masked from &#39;package:rstatix&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre class="r"><code>data.test &lt;- data.frame(bc$clean_test, bc$binary)
+data.test= table(bc$clean_test, bc$binary) 
+print(data.test)</code></pre>
+<pre><code>##          
+##           FAIL PASS
+##   dubious  142    0
+##   men      194    0
+##   notalk   514    0
+##   nowomen  141    0
+##   ok         0  803</code></pre>
+<pre class="r"><code>print(chisq.test(data.test))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  data.test
+## X-squared = 1794, df = 4, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Create a plot visualizing the null distribution and the test statistic ????????????????
+#Mosaic Plot
+table1 &lt;- table(bc$clean_test, bc$binary)
+mosaicplot(table1, shade=TRUE, legend=TRUE)</code></pre>
+<pre><code>## Warning: In mosaicplot.default(table1, shade = TRUE, legend = TRUE) :
+##  extra argument &#39;legend&#39; will be disregarded</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#ggplot(bc, aes(x=clean_test, fill=binary)+geom_bar(position = &quot;stack&quot;)</code></pre>
+<p><em>H0: The name of the test and whether they pass/ fail are related in the population. HA :The name of the test and whether they pass/ fail are not related in the population. I used Chi-Square test and Mosaic Plot for visualizing it.</em></p>
+<p>##linear regression model</p>
+<pre class="r"><code>library(sandwich)
+library(lmtest)</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>bc$year_c &lt;- bc$year-mean(bc$year)
+bc$domgross_c &lt;- bc$domgross-mean(bc$domgross)
+bc$budget_c &lt;- bc$budget-mean(bc$budget)
+
+fit1&lt;-lm(budget~binary*year_c, data=bc)
+coef(fit1)</code></pre>
+<pre><code>##       (Intercept)        binaryPASS            year_c binaryPASS:year_c 
+##        51594866.9       -14603571.9         1622599.0         -577227.1</code></pre>
+<pre class="r"><code>summary(fit1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = budget ~ binary * year_c, data = bc)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -66864539 -30268463 -10609645  17099816 362943258 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        51594867    1465949  35.196  &lt; 2e-16 ***
+## binaryPASS        -14603572    2195839  -6.651 3.87e-11 ***
+## year_c              1622599     149413  10.860  &lt; 2e-16 ***
+## binaryPASS:year_c   -577227     256829  -2.248   0.0247 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 46020000 on 1790 degrees of freedom
+## Multiple R-squared:  0.08935,    Adjusted R-squared:  0.08782 
+## F-statistic: 58.54 on 3 and 1790 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>xo &lt;- bc %&gt;% mutate(won=recode(binary, &#39;0&#39;=&#39;PASS&#39;,&#39;1&#39;=&#39;FAIL&#39;))
+ggplot(xo, aes(year_c, budget , group=won))+geom_point(aes(color=won),alpha=.5)+geom_smooth(method=&quot;lm&quot;, fullrange=T, aes(color=won))+theme(legend.position = &quot;top&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>SST&lt;- sum((bc$budget-mean(bc$budget))^2)
+SSR&lt;- sum((fit1$fitted.values-mean(bc$budget))^2)
+SSE&lt;- sum(fit1$residuals^2)
+# The proportion of the variation in the outcome does your model explain is 0.08678056.
+SSR/SST </code></pre>
+<pre><code>## [1] 0.08935039</code></pre>
+<pre class="r"><code>#Assumptions (linearity, homoskedsaticity)
+resids&lt;-fit1$residuals
+fitvals&lt;-fit1$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids),bins=10)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>ggplot()+geom_point(aes(fitvals,resids))</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<pre class="r"><code>#normality test
+shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.8559, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#recompute regression results with robust standard errors
+fit2&lt;-lm(budget~binary*year, data=bc)
+coeftest(fit2)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                    Estimate  Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)     -3197744727   299103108 -10.6911  &lt; 2e-16 ***
+## binaryPASS       1141324030   514406611   2.2187  0.02663 *  
+## year                1622599      149413  10.8598  &lt; 2e-16 ***
+## binaryPASS:year     -577227      256829  -2.2475  0.02473 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>coeftest(fit2, vcov=vcovHC(fit1))[,1:2]</code></pre>
+<pre><code>##                Estimate Std. Error
+## (Intercept) -3197744727    1623864
+## binaryPASS   1141324030    2147761</code></pre>
+<p><em>Above I did the linear regression model from the variables year and binary for the response variable of budget.The proportion of the variation in the outcome does your model explain is 0.08678056. From recompute regression results with robust standard errors I got the intercept of 51594867 which is very similar to the orginal results of the linear regression model which gave a intercept of 51594866.9.</em></p>
+<p>##regression model (with the interaction),compute bootstrapped standard errors</p>
+<pre class="r"><code>#Bootstrap residuals instead
+fit&lt;-lm(budget~binary*year_c, data=bc)
+resids&lt;-fit$residuals
+fitted&lt;-fit$fitted.values
+  resid_resamp&lt;-replicate(5000,{
+    new_resids&lt;-sample(resids,replace=TRUE)
+    newdat&lt;-bc
+    newdat$new_y&lt;-fitted+new_resids
+    fit&lt;-lm(new_y ~ binary*year_c, data = newdat)
+    coef(fit)
+})
+#normal SEs
+coeftest(fit)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                    Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)        51594867    1465949 35.1955 &lt; 2.2e-16 ***
+## binaryPASS        -14603572    2195839 -6.6506 3.867e-11 ***
+## year_c              1622599     149413 10.8598 &lt; 2.2e-16 ***
+## binaryPASS:year_c   -577227     256829 -2.2475   0.02473 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>## Estimated SEs
+resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) binaryPASS   year_c binaryPASS:year_c
+## 1     1455966    2212967 150677.3          254082.3</code></pre>
+<pre class="r"><code>## Empirical 95% CI
+resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%gather%&gt;%group_by(key)%&gt;%
+ summarize(lower=quantile(value,.025), upper=quantile(value,.975))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   key                    lower      upper
+##   &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)        48845757.  54474435.
+## 2 binaryPASS        -19001364. -10344773.
+## 3 binaryPASS:year_c  -1084550.    -78760.
+## 4 year_c              1313933.   1910275.</code></pre>
+<p><em>for the Estimated SEs by computing bootstrapped standard errors resulted in Intercept of 1462936 , and the normal SEs is 51594867. These two numbers are very close to each other.</em></p>
+<p>##logistic regression model from two variables</p>
+<pre class="r"><code>library(tidyverse)
+library(lmtest)
+data&lt;-bc%&gt;%mutate(outcome=ifelse(binary==&quot;PASS&quot;,1,0))
+head(data)</code></pre>
+<pre><code>## # A tibble: 6 x 19
+##    year imdb  title test  clean_test binary budget domgross intgross code 
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;
+## 1  2013 tt17… 21 &amp;… nota… notalk     FAIL   1.30e7 25682380   4.22e7 2013…
+## 2  2012 tt13… Dred… ok-d… ok         PASS   4.50e7 13414714   4.09e7 2012…
+## 3  2013 tt20… 12 Y… nota… notalk     FAIL   2.00e7 53107035   1.59e8 2013…
+## 4  2013 tt12… 2 Gu… nota… notalk     FAIL   6.10e7 75612460   1.32e8 2013…
+## 5  2013 tt04… 42    men   men        FAIL   4.00e7 95020213   9.50e7 2013…
+## 6  2013 tt13… 47 R… men   men        FAIL   2.25e8 38362475   1.46e8 2013…
+## # … with 9 more variables: budget_2013 &lt;dbl&gt;, domgross_2013 &lt;dbl&gt;,
+## #   intgross_2013 &lt;dbl&gt;, period_code &lt;dbl&gt;, decade_code &lt;dbl&gt;, year_c &lt;dbl&gt;,
+## #   domgross_c &lt;dbl&gt;, budget_c &lt;dbl&gt;, outcome &lt;dbl&gt;</code></pre>
+<pre class="r"><code>fit2&lt;-glm(outcome~budget+year, family=&quot;binomial&quot;, data=data)
+summary(fit2)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = outcome ~ budget + year, family = &quot;binomial&quot;, data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3503  -1.0961  -0.8551   1.1840   2.0375  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -6.025e+01  1.133e+01  -5.316 1.06e-07 ***
+## budget      -7.268e-09  1.127e-09  -6.448 1.13e-10 ***
+## year         3.014e-02  5.665e-03   5.320 1.04e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2467.3  on 1793  degrees of freedom
+## Residual deviance: 2406.9  on 1791  degrees of freedom
+## AIC: 2412.9
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>coeftest(fit2)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                Estimate  Std. Error z value  Pr(&gt;|z|)    
+## (Intercept) -6.0249e+01  1.1334e+01 -5.3159 1.061e-07 ***
+## budget      -7.2675e-09  1.1271e-09 -6.4479 1.134e-10 ***
+## year         3.0138e-02  5.6648e-03  5.3202 1.036e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(fit2))</code></pre>
+<pre><code>##  (Intercept)       budget         year 
+## 6.828274e-27 1.000000e+00 1.030597e+00</code></pre>
+<pre class="r"><code>#confusion matrix 
+probs&lt;- predict(fit2, type=&quot;response&quot;)
+table(predict=as.numeric(probs&gt;.5),truth=data$outcome)%&gt;% addmargins</code></pre>
+<pre><code>##        truth
+## predict    0    1  Sum
+##     0    707  474 1181
+##     1    284  329  613
+##     Sum  991  803 1794</code></pre>
+<pre class="r"><code>#accuracy 
+( 707+329)/1794</code></pre>
+<pre><code>## [1] 0.5774805</code></pre>
+<pre class="r"><code>#Sensitivity (TPR)
+707/1181 </code></pre>
+<pre><code>## [1] 0.5986452</code></pre>
+<pre class="r"><code>#Specificity (TNR)
+329 /613</code></pre>
+<pre><code>## [1] 0.5367047</code></pre>
+<pre class="r"><code>#Precision (PPV)
+707/991</code></pre>
+<pre><code>## [1] 0.7134208</code></pre>
+<pre class="r"><code>data$prob&lt;- predict(fit2, type=&quot;response&quot;)
+ggplot(data,aes(outcome,prob))+geom_jitter(aes(color=outcome), alpha=.5,size=3)+geom_rug(aes(color=outcome),slides=&quot;right&quot;)+geom_hline(yintercept = .5)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: slides</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>table(predict=as.numeric(data$prob&gt;.5),truth=data$outcome)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict    0    1  Sum
+##     0    707  474 1181
+##     1    284  329  613
+##     Sum  991  803 1794</code></pre>
+<pre class="r"><code>#sensitivity
+mean(data[data$outcome==1,]$prob&gt;.1)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>#specificity
+mean(data[data$outcome==0,]$prob&lt;.1)</code></pre>
+<pre><code>## [1] 0.001009082</code></pre>
+<pre class="r"><code>#density plot, we have a perfect separation and no overlap between the two red and blue ones.
+data$logit&lt;- predict(fit2, type=&quot;link&quot;)
+data  %&gt;%  ggplot(aes(logit,color=binary, fill=binary))+geom_density(alpha=.4)+theme(legend.position = c(.85,.85))+geom_vline(xintercept = 0)+xlab(&quot;predictor(logit)&quot;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>#Generate an ROC curve (plot) and calculate AUC
+new3&lt;- bc  %&gt;% mutate_at(c(&quot;clean_test&quot;), as.factor)
+library(plotROC)
+ROCplot &lt;- ggplot(data)+geom_roc(aes(d=outcome, m=prob), n.cuts=0)
+ROCplot</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<pre class="r"><code>#calculated AUC is 0.6055414    
+calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.6055414</code></pre>
+<p><em>The estimate column is the log odd coefficient and none of them are significant. Negative numbers mean the more the log of the odds decrease as we increase the number of test , probability goes down(for instance for intercept , budget are both negative numbers).none of them are significant so they do not have a huge impact on the response variable.For the density plot, we do not have a perfect separation and there is lot of overlap between the two red and blue ones.calculated AUC is 0.6055414. accuracy is 0.5774805, sensivity is 0.5986452, specifity is 0.5367047. </em></p>
+<pre class="r"><code>class_diag&lt;-function(probs,truth){
+  
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}</code></pre>
+<p>##logistic regression model from all variables</p>
+<pre class="r"><code>library(dbplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dbplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     ident, sql</code></pre>
+<pre class="r"><code>data&lt;- bc %&gt;% mutate(outcome=ifelse(binary==&quot;PASS&quot;,1,0))
+data5&lt;- data %&gt;% dplyr::select(-imdb, -title, -test, -clean_test, -code, -binary, -period_code, -decade_code, -domgross_c) %&gt;% na.omit()
+glimpse(data5)</code></pre>
+<pre><code>## Rows: 1,776
+## Columns: 10
+## $ year          &lt;dbl&gt; 2013, 2012, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2…
+## $ budget        &lt;dbl&gt; 1.30e+07, 4.50e+07, 2.00e+07, 6.10e+07, 4.00e+07, 2.25e…
+## $ domgross      &lt;dbl&gt; 25682380, 13414714, 53107035, 75612460, 95020213, 38362…
+## $ intgross      &lt;dbl&gt; 42195766, 40868994, 158607035, 132493015, 95020213, 145…
+## $ budget_2013   &lt;dbl&gt; 13000000, 45658735, 20000000, 61000000, 40000000, 22500…
+## $ domgross_2013 &lt;dbl&gt; 25682380, 13611086, 53107035, 75612460, 95020213, 38362…
+## $ intgross_2013 &lt;dbl&gt; 42195766, 41467257, 158607035, 132493015, 95020213, 145…
+## $ year_c        &lt;dbl&gt; 10.447603, 9.447603, 10.447603, 10.447603, 10.447603, 1…
+## $ budget_c      &lt;dbl&gt; -31826462.6, 173537.4, -24826462.6, 16173537.4, -482646…
+## $ outcome       &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0…</code></pre>
+<pre class="r"><code>fit5&lt;- glm(outcome~., data=data5, family=&quot;binomial&quot;)
+prob2 &lt;- predict(fit5,type=&quot;response&quot;)
+class_diag(prob2, data5$outcome) </code></pre>
+<pre><code>##        acc      sens      spec       ppv       auc
+## 1 0.588964 0.4861461 0.6720978 0.5451977 0.6215275</code></pre>
+<pre class="r"><code>set.seed(1234)
+k=10
+data&lt;- data5 [sample(nrow(data5)),]
+folds&lt;- cut(seq(1:nrow(data5)), breaks=k, labels=F)
+diags&lt;- NULL
+for(i in 1:k){
+  train&lt;- data5[folds!=i,]
+  test&lt;- data5[folds!=i,]
+  truth&lt;- test$outcome
+  fit6&lt;- glm(outcome~., data=train, family=&quot;binomial&quot;)
+  probs&lt;- predict(fit6, newdata=test, type=&quot;response&quot;)
+  diags&lt;- rbind(diags, class_diag(probs,truth))
+}</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading
+
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre class="r"><code>summarize_all(diags, mean)</code></pre>
+<pre><code>##         acc      sens      spec     ppv       auc
+## 1 0.5911533 0.4865884 0.6749055 0.54787 0.6218954</code></pre>
+<pre class="r"><code>library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 4.0-2</code></pre>
+<pre class="r"><code>set.seed(1234)
+y&lt;- as.matrix(data$outcome)
+x&lt;- model.matrix(outcome~.,data=data)[,-1]
+head(x); x&lt;-scale(x)</code></pre>
+<pre><code>##   year   budget domgross  intgross budget_2013 domgross_2013 intgross_2013
+## 1 1999 80000000 91188905 180188905   111876962     127524221     251987342
+## 2 2003 55000000 70098138 180098138    69634783      88750338     228019903
+## 3 2002  4000000  6525762  11799060     5180717       8452031      15281897
+## 4 2003 68000000 33685268  75685268    86093913      42648478      95824131
+## 5 2008 20000000  3531756   5531756    21645126       3822265       5986778
+## 6 2005  1125000 16124543  18673274     1342162      19237114      22277835
+##       year_c  budget_c
+## 1 -3.5523969  35173537
+## 2  0.4476031  10173537
+## 3 -0.5523969 -40826463
+## 4  0.4476031  23173537
+## 5  5.4476031 -24826463
+## 6  2.4476031 -43701463</code></pre>
+<pre class="r"><code>cv&lt;- cv.glmnet(x,y,family=&quot;binomial&quot;)
+lasso &lt;- glmnet(x,y,family=&quot;binomial&quot;, lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 10 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                         s0
+## (Intercept)   -0.216921656
+## year           0.090572418
+## budget         .          
+## domgross       .          
+## intgross       .          
+## budget_2013   -0.228201733
+## domgross_2013 -0.005013170
+## intgross_2013  .          
+## year_c         0.008766944
+## budget_c       .</code></pre>
+<pre class="r"><code>#Perform 10-fold CV using only the variables lasso selected
+data5$year2013&lt;-ifelse(data5$year==&quot;2013&quot;,1,0)
+data7&lt;-data5[sample(nrow(data5)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(data5)),breaks=k,labels=F) #create folds
+diags&lt;-NULL
+for(i in 1:k){
+  train&lt;-data7[folds!=i,] 
+  test&lt;-data7[folds==i,]
+  truth&lt;-test$outcome
+  fit&lt;-glm(outcome~domgross+budget_2013+year2013,data=train,family=&quot;binomial&quot;)
+  probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+diags%&gt;%summarize_all(mean)</code></pre>
+<pre><code>##         acc      sens      spec      ppv       auc
+## 1 0.5580556 0.3207698 0.7522714 0.511266 0.5801314</code></pre>
+<p><em>according to the results of the lasso it can be said that the budget_2013,year_c, domgross_2013, year are the most predictable variables.From all the variable I got auc 0.6218954 but when Perform 10-fold CV using only the variables lasso selected I got auc 0.5801314 which are very similar with each other.</em></p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

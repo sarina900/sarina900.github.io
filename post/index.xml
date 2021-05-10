@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on my project</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on my project</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>my post</title>
+      <link>/post/2021/05/09/m/</link>
+      <pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/05/09/m/</guid>
+      <description>##Here is my post
+#Using R studio and Python together is fun Does the names Python and R next to next other sound scary? That is what I thought when I first heard them together but, the more I leaned about them the easier it got. Each of them have their own special features and being able to use them together makes things better. 
+library(reticulate) something &amp;lt;-&amp;quot;This is my name:&amp;quot; ag&amp;lt;- &amp;quot;My age is&amp;quot; first=&amp;quot;sarina&amp;quot; last=&amp;quot;Khajeharzani&amp;quot; age=20+3 print(r.</description>
+    </item>
+    
+  </channel>
+</rss>

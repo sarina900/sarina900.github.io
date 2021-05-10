@@ -1,0 +1,292 @@
+---
+title: "Project2 Sarina"
+author: "sarina Khajeharzani, sk49523"
+date: "4/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## My project 2
+
+##Introduction
+*For this project I am using the bechdel data from the fivethirtyeight. This data is about the Dollar-And-Cents Case Against Hollywood's Exclusion of Women to see different information about the Hollywood movies that have a female actress who is the main character to see if woman are excluded from movies or not. Some of the most important factors of this data are the year, test (indicating the type of the test that they used), the budget of the movie, Binary which says that the movie passes the test or not.*
+
+```{R}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(mvtnorm)
+library(ggExtra)
+library(ggridges)
+library(rstatix)
+library(vegan)
+library(fivethirtyeight)
+write_csv(bechdel, "bc.csv")
+getwd()
+bc <- read_csv("bc.csv")
+
+select<-dplyr::select
+new<- bc %>% select(year, clean_test, budget, domgross, intgross, title)  %>% group_by(clean_test)  %>% arrange(desc(year))
+```
+
+## MANOVA testing
+```{R}
+
+#assumption
+group<- bc$clean_test
+DVs<- bc %>% select(year, budget, domgross, intgross)
+sapply(split(DVs, group),mshapiro_test)
+
+#MANOVA
+man_1 <- manova(cbind(year, budget, domgross, intgross )~ clean_test, data= bc)
+summary(man_1)
+summary.aov(man_1)
+
+bc %>% group_by(clean_test) %>% summarize(mean(year), mean(budget), mean(domgross),
+    mean(intgross))
+
+
+#One-Way ANOVA 
+#the results tells us to reject the (null hypothesis) thefore all the means are not the same.
+
+summary(aov(year~clean_test,data=bc))
+summary(aov(budget~clean_test,data=bc))
+summary(aov(domgross~clean_test,data=bc))
+summary(aov(intgross~clean_test,data=bc))
+
+
+#post hoc t-test
+pairwise.t.test(bc$year, bc$clean_test, p.adj = "none")
+pairwise.t.test(bc$budget, bc$clean_test, p.adj = "none")
+pairwise.t.test(bc$domgross, bc$clean_test, p.adj = "none")
+pairwise.t.test(bc$intgross, bc$clean_test, p.adj = "none")
+
+```
+
+*for checking the assumption I did multivariate normality for each group and the p value was so small so we can reject the null hypothesis and therefore the assumption of normality was not met.*
+
+
+## randomization test: (mean difference, correlation, F-statistic/ANOVA, chi-squared), etc
+```{R}
+#H0: The name of the test and whether they pass/ fail are related in the population.
+#HA :The name of the test and whether they pass/ fail are not related in the population.
+
+#Chi-Square test
+library("MASS")
+data.test <- data.frame(bc$clean_test, bc$binary)
+data.test= table(bc$clean_test, bc$binary) 
+print(data.test)
+print(chisq.test(data.test))
+
+#Create a plot visualizing the null distribution and the test statistic ????????????????
+#Mosaic Plot
+table1 <- table(bc$clean_test, bc$binary)
+mosaicplot(table1, shade=TRUE, legend=TRUE)
+
+#ggplot(bc, aes(x=clean_test, fill=binary)+geom_bar(position = "stack")
+```
+*H0: The name of the test and whether they pass/ fail are related in the population. HA :The name of the test and whether they pass/ fail are not related in the population. I used Chi-Square test and Mosaic Plot for visualizing it.*
+
+
+##linear regression model
+```{R}
+library(sandwich)
+library(lmtest)
+bc$year_c <- bc$year-mean(bc$year)
+bc$domgross_c <- bc$domgross-mean(bc$domgross)
+bc$budget_c <- bc$budget-mean(bc$budget)
+
+fit1<-lm(budget~binary*year_c, data=bc)
+coef(fit1)
+summary(fit1)
+
+xo <- bc %>% mutate(won=recode(binary, '0'='PASS','1'='FAIL'))
+ggplot(xo, aes(year_c, budget , group=won))+geom_point(aes(color=won),alpha=.5)+geom_smooth(method="lm", fullrange=T, aes(color=won))+theme(legend.position = "top")
+
+SST<- sum((bc$budget-mean(bc$budget))^2)
+SSR<- sum((fit1$fitted.values-mean(bc$budget))^2)
+SSE<- sum(fit1$residuals^2)
+# The proportion of the variation in the outcome does your model explain is 0.08678056.
+SSR/SST 
+
+#Assumptions (linearity, homoskedsaticity)
+resids<-fit1$residuals
+fitvals<-fit1$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+ggplot()+geom_histogram(aes(resids),bins=10)
+ggplot()+geom_point(aes(fitvals,resids))
+
+#normality test
+shapiro.test(resids)
+
+#recompute regression results with robust standard errors
+fit2<-lm(budget~binary*year, data=bc)
+coeftest(fit2)
+coeftest(fit2, vcov=vcovHC(fit1))[,1:2]
+
+```
+*Above I did the linear regression model from the variables year and binary for the response variable of budget.The proportion of the variation in the outcome does your model explain is 0.08678056. From recompute regression results with robust standard errors I got the intercept of 51594867 which is very similar to the orginal results of the linear regression model which gave a intercept of  51594866.9.*
+
+
+##regression model (with the interaction),compute bootstrapped standard errors 
+```{R}
+#Bootstrap residuals instead
+fit<-lm(budget~binary*year_c, data=bc)
+resids<-fit$residuals
+fitted<-fit$fitted.values
+  resid_resamp<-replicate(5000,{
+    new_resids<-sample(resids,replace=TRUE)
+    newdat<-bc
+    newdat$new_y<-fitted+new_resids
+    fit<-lm(new_y ~ binary*year_c, data = newdat)
+    coef(fit)
+})
+#normal SEs
+coeftest(fit)
+  
+## Estimated SEs
+resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
+
+## Empirical 95% CI
+resid_resamp%>%t%>%as.data.frame%>%gather%>%group_by(key)%>%
+ summarize(lower=quantile(value,.025), upper=quantile(value,.975))
+```
+*for the Estimated SEs by computing bootstrapped standard errors resulted in Intercept of 1462936	, and the normal SEs is  51594867. These two numbers are very close to each other.*
+
+##logistic regression model from two variables 
+```{R}
+library(tidyverse)
+library(lmtest)
+data<-bc%>%mutate(outcome=ifelse(binary=="PASS",1,0))
+head(data)
+
+fit2<-glm(outcome~budget+year, family="binomial", data=data)
+summary(fit2)
+coeftest(fit2)
+exp(coef(fit2))
+
+#confusion matrix 
+probs<- predict(fit2, type="response")
+table(predict=as.numeric(probs>.5),truth=data$outcome)%>% addmargins
+#accuracy 
+( 707+329)/1794
+#Sensitivity (TPR)
+707/1181 
+#Specificity (TNR)
+329 /613
+#Precision (PPV)
+707/991
+
+data$prob<- predict(fit2, type="response")
+ggplot(data,aes(outcome,prob))+geom_jitter(aes(color=outcome), alpha=.5,size=3)+geom_rug(aes(color=outcome),slides="right")+geom_hline(yintercept = .5)
+table(predict=as.numeric(data$prob>.5),truth=data$outcome)%>%addmargins
+#sensitivity
+mean(data[data$outcome==1,]$prob>.1)
+#specificity
+mean(data[data$outcome==0,]$prob<.1)
+
+#density plot, we have a perfect separation and no overlap between the two red and blue ones.
+data$logit<- predict(fit2, type="link")
+data  %>%  ggplot(aes(logit,color=binary, fill=binary))+geom_density(alpha=.4)+theme(legend.position = c(.85,.85))+geom_vline(xintercept = 0)+xlab("predictor(logit)")
+
+
+#Generate an ROC curve (plot) and calculate AUC
+new3<- bc  %>% mutate_at(c("clean_test"), as.factor)
+library(plotROC)
+ROCplot <- ggplot(data)+geom_roc(aes(d=outcome, m=prob), n.cuts=0)
+ROCplot
+#calculated AUC is 0.6055414	
+calc_auc(ROCplot)
+
+
+
+
+```
+*The estimate column is the log odd coefficient and none of them are significant. Negative numbers mean the more the log of the odds decrease as we increase the number of test , probability goes down(for instance for intercept  , budget are both negative numbers).none of them are significant so they do not have a huge impact on the response variable.For the density plot, we do not have a perfect separation and there is lot of overlap between the two red and blue ones.calculated AUC is 0.6055414. accuracy is 0.5774805, sensivity is 0.5986452, specifity is  0.5367047. *
+
+```{R}
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+```
+
+##logistic regression model from all variables
+```{R}
+library(dbplyr)
+data<- bc %>% mutate(outcome=ifelse(binary=="PASS",1,0))
+data5<- data %>% dplyr::select(-imdb, -title, -test, -clean_test, -code, -binary, -period_code, -decade_code, -domgross_c) %>% na.omit()
+glimpse(data5)
+fit5<- glm(outcome~., data=data5, family="binomial")
+prob2 <- predict(fit5,type="response")
+class_diag(prob2, data5$outcome) 
+set.seed(1234)
+k=10
+data<- data5 [sample(nrow(data5)),]
+folds<- cut(seq(1:nrow(data5)), breaks=k, labels=F)
+diags<- NULL
+for(i in 1:k){
+  train<- data5[folds!=i,]
+  test<- data5[folds!=i,]
+  truth<- test$outcome
+  fit6<- glm(outcome~., data=train, family="binomial")
+  probs<- predict(fit6, newdata=test, type="response")
+  diags<- rbind(diags, class_diag(probs,truth))
+}
+summarize_all(diags, mean)
+
+library(glmnet)
+set.seed(1234)
+y<- as.matrix(data$outcome)
+x<- model.matrix(outcome~.,data=data)[,-1]
+head(x); x<-scale(x)
+
+cv<- cv.glmnet(x,y,family="binomial")
+lasso <- glmnet(x,y,family="binomial", lambda=cv$lambda.1se)
+coef(lasso)
+
+#Perform 10-fold CV using only the variables lasso selected
+data5$year2013<-ifelse(data5$year=="2013",1,0)
+data7<-data5[sample(nrow(data5)),] #randomly order rows
+folds<-cut(seq(1:nrow(data5)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+  train<-data7[folds!=i,] 
+  test<-data7[folds==i,]
+  truth<-test$outcome
+  fit<-glm(outcome~domgross+budget_2013+year2013,data=train,family="binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+
+diags%>%summarize_all(mean)
+```
+*according to the results of the lasso it can be said that the budget_2013,year_c, domgross_2013, year are the most predictable variables.From all the variable I got auc 0.6218954 but when Perform 10-fold CV using only the variables lasso selected I got auc 0.5801314 which are very similar with each other.*
+
+```{R}
+
+```

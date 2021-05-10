@@ -1,0 +1,156 @@
+---
+title: "sarina project1"
+author: "sarina Khajeharzani, sk49523"
+date: "4/4/2021"
+output: html_document
+---
+
+```{R}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## My project 1
+
+## introduction:
+
+*I choose the two data sets (hate_crimes) and (state_info) from the database fivethirtyeight. Both of my datasets have the states name in common and that is how I joined them. I moved to the U.S. about four years ago and I always wanted to learn more about it. The data set state_info has the variables: states name, abbreviations of the states, divion and region of each state. The data set hate_crimes has the variables: states name, abbreviations of the states, the median income of households, how much people do not like crime and the amount of shares of different groups of people.*
+
+## joinig data:
+```{R}
+library(dplyr)
+library(ggplot2)
+library(ggridges)
+select<-dplyr::select
+library(fivethirtyeight)
+library(tidyverse)
+
+write.csv(hate_crimes, "hc.csv")
+getwd()
+hc <- read.csv("hc.csv")
+
+
+write_csv(state_info, "si.csv")
+getwd()
+si <- read.csv("si.csv")
+
+
+fulldata <- full_join(si, hc ,by="state") 
+fulldata <- fulldata %>% na.omit()
+
+new <- fulldata %>% select(state, "abbrev"= state_abbrev.x, -state_abbrev.y, "income"=median_house_inc, -share_unemp_seas, -share_pop_metro, -share_pop_hs, "noncitizen"=share_non_citizen,"whitep"=share_white_poverty, -gini_index, "nonewhite"=share_non_white, -share_vote_trump, "hatecrime"=hate_crimes_per_100k_splc, "av.hatecrime"=avg_hatecrimes_per_100k_fbi, division,region)
+
+```
+*I used full_join for joining my two data sets to have all of my variables and I used the common variable state for joining them. I also made a new data called "new" from fulldata in which I dropped the variables share_vote_trump, gini_index, share_pop_metro, share_pop_hs, share_unemp_seas. I do not think this should be a problem because I had too many variables and wanted to decrease them and I have the fulldata intact in case I needed to use the whole data in any step.*
+
+## tidy data:
+
+```{R}
+library(tidyverse)
+library(dplyr)
+#untidy <- new  %>% pivot_wider(names_from="region", values_from="whitep") 
+#tidy <- untidy%>% pivot_longer(c("South", "West", "Northeast", "Midwest"), names_to="regions",values_to="whitep") %>% na.omit()
+
+
+```
+*My data were already tidy therefore I tried to untidy and tidy my data again. I used pivot_wider function for un-tiding my data and pivot_wider for tiding my data again.*
+
+
+##summary satistics
+```{R}
+new %>% arrange(desc(income)) %>% filter(region=="South") %>% select(1:8)  %>% mutate(sum= (nonewhite)+ (whitep))
+new %>% summarize_all(n_distinct)
+new %>% group_by(state, region) %>% summarize_all(n_distinct)
+new %>% summarize_if(is.numeric, list(min=min, max=max, sd=sd, median=median, mean=mean) , na.rm=T)
+new %>% group_by(state, region) 
+new%>% summarize(means= mean(income))
+```
+*for the summary statistics first I used arrange and the function descending to arrange my data in a way that I have the highest income on the top of my table and then the lower ones.I used filter to only select the data that are in the South region and then the function select to remove the unnecessary columns. with mutate I created a new column called sum which has the addition of shares of the people who are not white and people who are white and in poverty. I specificity used suumarize_if because I only wanted to calculate the summary statistics of the numeric variables not everything. From the data we can see that the division South Atlantic in the region south has the highest income and among thoese Maryland with 76165	has the highest income of all. The min income of house holds is West Virginia with the income 39552.	Something that was interesting from my data was that even though U.S. has 51 states my distinct number of states in my data was 45. *
+
+
+## graph
+
+```{R}
+#new %>% select_if(is.numeric) %>% cor %>% as.data.frame %>% rownames_to_column %>% pivot_longer(-1) %>%ggplot(aes(rowname,name,fill=value))+geom_tile()geom_text(aes(label=round(value,2)))+ xlab("")+ylab("")+coord_fixed()+scale_fill_gradient2(low="red",mid="white",high="blue")+ theme_minimal()+ ggtitle("graph1") 
+```
+*In graph1 we can see the correlation head map of the numeric variables in the data set new. I choose the data set new instead of fulldata because the names were shorter and it has less data which resulted in a better graph. In this graph the strongest correlation is 1 between each variable and itself. The next strongest correlation was -0.81 between income and white poverty meaning that the white poverty group had the lowest income.The smallest correlation is 0.04 between income and nonwhite meaning that according to this data there is no a strong relationship between income and people who are not white.*
+
+
+
+```{R}
+#graph2
+#new %>% ggplot(aes(region,income)) + facet_wrap(~division) + geom_bar(stat="summary") + geom_errorbar(stat="summary", col="red")+ theme_minimal()+ ggtitle("graph2") 
+```
+
+*In graph2 we can wee a visualization of the income in different regions and divisions. From the graph it is clear that New England, region northeast has the highest income. The East South Central in the South has the lowest income. South Atlantic, has the widest error bar and East South Central has the smallest error bar.*
+
+
+
+```{R}
+ggplot(new, aes(x= income , y= region)) +geom_point(size=2,alpha=.8, aes(color=hatecrime))+coord_flip()+ theme_minimal()
+```
+
+*I thought graph3 was interesting because in addition to showing the income of different regions it is also showing how much people hate crime in these areas. According to the graph it can be concluded that most of people have a low income and they do not like crime so maybe a crime is a major issue in that are. We even have the brightest point in the south which represents in the highest number for disliking crime.*
+
+
+
+
+
+## Cluster
+```{R}
+library(cluster)
+select<-dplyr::select
+
+
+#way 1
+clust_data <- new %>% select(noncitizen, nonewhite , income)
+set.seed(348)
+kmeans1 <- clust_data %>% kmeans(2)
+kmeans1$cluster
+#save the cluster solution in your dataset
+kmeansclust <- clust_data %>% mutate (cluster= as.factor( kmeans1$cluster )) 
+kmeansclust %>%ggplot(aes(noncitizen, nonewhite , income, color=cluster))+geom_point() 
+pam1<- clust_data %>% pam(2)
+pam1
+plot(pam1, which=2)
+
+
+#way 2
+#choosing the best k for three variables
+pam_dat<- new %>% select(noncitizen, nonewhite , income)
+sil_width<- vector()
+for(i in 2:10){
+  pam_fit <- pam(pam_dat, k = i)
+  sil_width[i] <- pam_fit$silinfo$avg.width
+}
+ggplot()+geom_line(aes(x=1:10,y=sil_width))+scale_x_continuous(name="k",breaks=1:10)
+# k=2 is the best according to the graph becasue of its highest number on graph.
+
+#for three variables
+library(tidyverse)
+library(plotly)
+pam2<- new  %>% select(noncitizen, nonewhite , income) %>% scale %>% pam(2)
+pam2
+plot(pam2, which=2)
+#accorfing to the graph we get 0.36 which means that the structure is weak and could be artificial.
+
+#graph3d for three variables
+final <- new  %>% select(state,noncitizen, nonewhite , income) %>% mutate(cluster=pam2$clustering)
+
+#summarizing the cluster:
+final  %>% group_by(cluster)  %>% summarize_if(is.numeric, mean, na.rm=T)
+
+final %>% plot_ly (x= ~noncitizen, y= ~nonewhite , z= ~income, color= ~cluster, type= "scatter3d", mode="markers", symbols= c('circle','x','o'))
+
+#graph2d for three variables
+ggplot(final, aes(x=noncitizen, y= nonewhite ,z=income , color= cluster))+geom_point()
+
+
+```
+
+*For this part of the assignment I choose the three variables of the share of non citizens, share of people who are not white and median income of households. One of the most importent steps was to choose the best k for my three variables and therefore as recommended in the class I plotted a ggplot for K to see which K value has the highest value. According to my graph K=2 has the highest value and that is why I choose the number2. From the next plot I found that the average width is 0.36 which is less than 0.5 and since this number is small we can conclude that the structure is weak and could be artificial.*
+
+
+
+
+
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on my project</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on my project</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project2 Sarina</title>
+      <link>/project/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>My project 2 ##Introduction For this project I am using the bechdel data from the fivethirtyeight. This data is about the Dollar-And-Cents Case Against Hollywood’s Exclusion of Women to see different information about the Hollywood movies that have a female actress who is the main character to see if woman are excluded from movies or not. Some of the most important factors of this data are the year, test (indicating the type of the test that they used), the budget of the movie, Binary which says that the movie passes the test or not.</description>
+    </item>
+    
+    <item>
+      <title>sarina project1</title>
+      <link>/project/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>knitr::opts_chunk$set(echo = TRUE) My project 1  introduction: I choose the two data sets (hate_crimes) and (state_info) from the database fivethirtyeight. Both of my datasets have the states name in common and that is how I joined them. I moved to the U.S. about four years ago and I always wanted to learn more about it. The data set state_info has the variables: states name, abbreviations of the states, divion and region of each state.</description>
+    </item>
+    
+  </channel>
+</rss>
